@@ -1,7 +1,7 @@
 #Script para generar referencias y notas a pie de página
 #Fecha 05/12/2017
 
-import argparse
+import argparse, sys
 from yattag import Doc, indent
 
 parser = argparse.ArgumentParser(description="Generador de notas y referencias en HTML")
@@ -11,10 +11,12 @@ group.add_argument("-t", type=int, help="fin de rango", default=0)
 
 parser.add_argument("n", type=int, help="numero de notas a generar, escriba cero (0) si desea introducir rango")
 #parser.add_argument("-s", help="Lugar de origen de la referencia")
+#parser.add_argument("-o", help="Archivo de destino")
 args = parser.parse_args()
 num = args.n
 ini = args.f
 fin =args.t
+#archivo_notas = args.o
 #source = args.s
 
 origen = "capitulo1.xhtml"
@@ -34,24 +36,43 @@ def crearNota(n, archivo):
 	return nota
 
 def crearReferencia(n, archivo_notas):
-	with tag('sup', id = n):
-		with tag ('a', href = "../Text/notas.xhtml#nt{}".format(n), id="rf{}".format(n)):
-			line('sup', '[{}]'.format(n))
+	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, n), id="rf{}".format(n)):
+		line('sup', '[{}]'.format(n))
 	
 	ref = doc.getvalue()
 	return ref
+
+def generarArchivo(archivo_notas, notas):
+	try:
+		with open(archivo_notas, 'x') as output_file:
+			output_file.write(indent(notas))
+		output_file.close
+	
+	except FileExistsError:
+		print("Ya existe el archivo {}. ¿Desea sobreescribir?".format(archivo_notas))
+		respuesta = input("s/n: ")
+		if respuesta == 's':
+			with open(archivo_notas, 'w') as output_file:
+				output_file.write(indent(notas))
+				#output_file.truncate()
+		else:
+			with open(archivo_notas, 'a') as output_file:
+				output_file.write(indent(notas))
+			print("Agregado al final de archivo {}".format(archivo_notas))
+			sys.exit()
 
 i = 0
 
 if num != 0:
 	
 	while i < num:
-		nueva_nota = crearNota(i + 1, origen)
-		nueva_ref = crearReferencia(i + 1, archivo_notas)
-		notas = nueva_ref
+		notas = crearNota(i + 1, origen)
+		refs = crearReferencia(i + 1, archivo_notas)
 		i += 1
 
-	print (indent(notas))
+	#print(indent(notas))
+	generarArchivo(archivo_notas, refs)
+
 elif args.f == 0 | args.t == 0:
 	print("Debe indicar inicio y fin para rango")
 else:
@@ -62,6 +83,7 @@ else:
 		notas = nueva_ref
 		ini += 1
 		i+= 1
-	print (indent(notas))
+	#print (indent(notas))
 
 print('Has creado ', i, 'notas')
+sys.exit()
