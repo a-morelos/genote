@@ -42,24 +42,9 @@ def crearReferencia(n, archivo_notas):
 	ref = doc.getvalue()
 	return ref
 
-def generarArchivo(archivo_notas, notas):
-	try:
-		with open(archivo_notas, 'x') as output_file:
+def generarArchivo(archivo_notas, notas, accion):
+	with open(archivo_notas, accion) as output_file:
 			output_file.write(indent(notas))
-		output_file.close
-	
-	except FileExistsError:
-		print("Ya existe el archivo {}. ¿Desea sobreescribir?".format(archivo_notas))
-		respuesta = input("s/n: ")
-		if respuesta == 's':
-			with open(archivo_notas, 'w') as output_file:
-				output_file.write(indent(notas))
-				#output_file.truncate()
-		else:
-			with open(archivo_notas, 'a') as output_file:
-				output_file.write(indent(notas))
-			print("Agregado al final de archivo {}".format(archivo_notas))
-			sys.exit()
 
 i = 0
 
@@ -71,7 +56,16 @@ if num != 0:
 		i += 1
 
 	#print(indent(notas))
-	generarArchivo(archivo_notas, refs)
+	try:
+		generarArchivo(archivo_notas, refs, 'x')
+	except FileExistsError:
+		print("El archivo {} ya existe. ¿Desea sobreescribir?".format(archivo_notas))
+		resultado = input("s/n ")
+		if resultado == 's':
+			generarArchivo(archivo_notas, refs, 'w')
+		else:
+			generarArchivo(archivo_notas, refs, 'a')
+			print("Agregado al final del archivo {}".format(archivo_notas))
 
 elif args.f == 0 | args.t == 0:
 	print("Debe indicar inicio y fin para rango")
