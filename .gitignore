@@ -1,4 +1,4 @@
 #Archivos HTML generados
-.html
-.xhtml
-.xml
+*.html
+*.xhtml
+*.xml
