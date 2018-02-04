@@ -16,8 +16,11 @@ parser.add_argument("-s", help="Lugar de origen de la referencia (sin extensión
 
 args = parser.parse_args()
 num = args.n
+#inicio de rango
 ini = args.f
+#fin de rango
 fin =args.t
+#capitulo de origen
 origen = args.s + '.xhtml'
 #archivo_notas = args.o + 'xhtml'
 
@@ -29,8 +32,8 @@ def crearNota(n, archivo):
 	with tag('div', klass = "nota"):
 		with tag('p', id = "nt{}".format(n)):
 			line('sup', '[{}]'.format(n))
-			text(' **Aquí va el texto de nota.**')
-			with tag('a', href = "../Text/{}#{}".format(archivo, n)):
+			text(' **Aquí va el texto de nota.** ')
+			with tag('a', href = "../Text/{}#rf{}".format(archivo, n)):
 				doc.asis('&lt;&lt;')
 	
 	nota = doc.getvalue()
