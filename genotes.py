@@ -28,21 +28,29 @@ origen = args.s + '.xhtml'
 #archivo_notas = args.o + 'xhtml'
 
 archivo_notas = "notas.xhtml"
+archivo_refs = "referencias.xhtml"
 
-doc, tag, text, line = Doc().ttl()
+#doc, tag, text, line = Doc().ttl()
 
 def crearNota(n, archivo):
+
+	# Genera una instancia de Doc para la nota
+	note, tag, text, line = Doc().ttl()
+
 	with tag('div', klass = "nota"):
 		with tag('p', id = "nt{}".format(n)):
 			line('sup', '[{}]'.format(n))
 			text(' **Aquí va el texto de nota.** ')
 			with tag('a', href = "../Text/{}#rf{}".format(archivo, n)):
-				doc.asis('&lt;&lt;')
+				note.asis('&lt;&lt;')
 	
-	nota = doc.getvalue()
+	nota = indent(note.getvalue())
 	return nota
 
 def crearReferencia(n, archivo_notas):
+
+	# Genera una instancia de Doc para la referencia
+	doc, tag, text, line = Doc().ttl()
 	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, n), id="rf{}".format(n)):
 		line('sup', '[{}]'.format(n))
 	
@@ -51,7 +59,8 @@ def crearReferencia(n, archivo_notas):
 
 def generarArchivo(archivo_notas, notas, accion):
 	with open(archivo_notas, accion) as output_file:
-			output_file.write(indent(notas))
+		for x in notas:
+			output_file.write(x)
 
 def imprimir(archivo_notas, notas):
 	try:
@@ -66,16 +75,18 @@ def imprimir(archivo_notas, notas):
 			print("Agregado al final del archivo {}".format(archivo_notas))
 
 i = 0
-
+notas = []
+referencias = []
 if num != 0:
 	
 	while i < num:
-		notas = crearNota(i + 1, origen)
-		refs = crearReferencia(i + 1, archivo_notas)
+		notas.append(crearNota(i + 1, origen))
+		referencias.append(crearReferencia(i + 1, archivo_notas))
 		i += 1
 
-	#print(indent(refs))
-	imprimir(archivo_notas, refs)
+	print(notas)
+	imprimir(archivo_notas, notas)
+	imprimir(archivo_refs, referencias)
 
 elif args.f == 0 | args.t == 0:
 	print("Debe indicar inicio y fin para rango")
@@ -87,8 +98,8 @@ else:
 		notas = nueva_ref
 		ini += 1
 		i+= 1
-	#print (indent(notas))
-	imprimir(archivo_notas, notas)
+	print (indent(notas))
+	#imprimir(archivo_notas, notas)
 
 print('Has creado ', i, 'notas')
 sys.exit()
