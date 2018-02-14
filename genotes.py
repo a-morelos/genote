@@ -80,7 +80,7 @@ referencias = []
 if num != 0:
 	
 	while i < num:
-		notas.append(crearNota(i + 1, origen))
+		notas.append(crearNota(i + 1, origen) + "\n")
 		referencias.append(crearReferencia(i + 1, archivo_notas) + "\n")
 		i += 1
 
