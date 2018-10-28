@@ -1,10 +1,13 @@
 #Script para generar referencias y notas a pie de página
+#Autor: Alberto Morelos
 #Fecha 05/12/2017
 
 import argparse, sys
 from yattag import Doc, indent
 
 parser = argparse.ArgumentParser(description="Generador de notas y referencias en HTML")
+
+#define un grupo de parametros para introducir notas por rangos
 group = parser.add_argument_group('rango')
 group.add_argument("-f", type=int, help="inicio de rango", default=0)
 group.add_argument("-t", type=int, help="fin de rango", default=0)
@@ -15,16 +18,12 @@ parser.add_argument("-s", help="Lugar de origen de la referencia (sin extensión
 #parser.add_argument("-e", help="Cambio de extension para las referencias de un archivo" default="xhtml")
 
 args = parser.parse_args()
-num = args.n
 
-#inicio de rango
-ini = args.f
-
-#fin de rango
-fin =args.t
-
+total_notas = args.n
+inicio_rango = args.f
+fin_rango =args.t
 #capitulo de origen
-origen = args.s + '.xhtml'
+cap_origen = args.s + '.xhtml'
 #archivo_notas = args.o + 'xhtml'
 
 archivo_notas = "notas.xhtml"
@@ -32,27 +31,28 @@ archivo_refs = "referencias.xhtml"
 
 #doc, tag, text, line = Doc().ttl()
 
-def crearNota(n, archivo):
+def crearNota(num_nota, archivo_texto):
 
 	# Genera una instancia de Doc para la nota
 	note, tag, text, line = Doc().ttl()
 
 	with tag('div', klass = "nota"):
-		with tag('p', id = "nt{}".format(n)):
-			line('sup', '[{}]'.format(n))
+		with tag('p', id = "nt{}".format(num_nota)):
+			line('sup', '[{}]'.format(num_nota))
 			text(' **Aquí va el texto de nota.** ')
-			with tag('a', href = "../Text/{}#rf{}".format(archivo, n)):
+			with tag('a', href = "../Text/{}#rf{}".format(archivo_texto, num_nota)):
 				note.asis('&lt;&lt;')
 	
 	nota = indent(note.getvalue())
 	return nota
 
-def crearReferencia(n, archivo_notas):
+def crearReferencia(num_nota, archivo_notas):
 
 	# Genera una instancia de Doc para la referencia
 	doc, tag, text, line = Doc().ttl()
-	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, n), id="rf{}".format(n)):
-		line('sup', '[{}]'.format(n))
+	
+	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, num_nota), id="rf{}".format(num_nota)):
+		line('sup', '[{}]'.format(num_nota))
 	
 	ref = doc.getvalue()
 	return ref
@@ -77,29 +77,31 @@ def imprimir(archivo_notas, notas):
 i = 0
 notas = []
 referencias = []
-if num != 0:
+
+if total_notas != 0:
 	
-	while i < num:
-		notas.append(crearNota(i + 1, origen) + "\n")
+	while i < total_notas:
+		notas.append(crearNota(i + 1, cap_origen) + "\n\n")
 		referencias.append(crearReferencia(i + 1, archivo_notas) + "\n")
 		i += 1
 
-	print(notas)
+	#print(notas)
 	imprimir(archivo_notas, notas)
 	imprimir(archivo_refs, referencias)
 
+#Se indica falta de parametros y se termina la ejecucion
 elif args.f == 0 | args.t == 0:
 	print("Debe indicar inicio y fin para rango")
 else:
 
-	while ini <= fin:
-		nueva_nota = crearNota(ini, origen)
-		nueva_ref = crearReferencia(ini, archivo_notas)
-		notas = nueva_ref
-		ini += 1
+	while inicio_rango <= fin_rango:
+		notas.append(crearNota(ini, origen) + "\n\n")
+		referencias.append(crearReferencia(ini, archivo_notas) + "\n")
+		inicio_rango += 1
 		i+= 1
-	print (indent(notas))
-	#imprimir(archivo_notas, notas)
+	#print (notas)
+	imprimir(archivo_notas, notas)
+	imprimir(archivo_refs, referencias)
 
-print('Has creado ', i, 'notas')
+print('Has creado ', len(notas), 'notas')
 sys.exit()
