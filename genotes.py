@@ -22,9 +22,9 @@ args = parser.parse_args()
 total_notas = args.n
 inicio_rango = args.f
 fin_rango =args.t
-#capitulo de origen
+# capitulo de origen
 cap_origen = args.s + '.xhtml'
-#archivo_notas = args.o + 'xhtml'
+# archivo_notas = args.o + 'xhtml'
 
 archivo_notas = "notas.xhtml"
 archivo_refs = "referencias.xhtml"
@@ -36,9 +36,9 @@ def crearNota(num_nota, archivo_texto):
 	# Genera una instancia de Doc para la nota
 	note, tag, text, line = Doc().ttl()
 
-	with tag('div', klass = "nota"):
-		with tag('p', id = "nt{}".format(num_nota)):
-			line('sup', '[{}]'.format(num_nota))
+	with tag('div', klass = "nota"): 
+		with tag('p', id = "nt{}".format(num_nota)): 
+			line('sup', '[{}]'.format(num_nota)) 
 			text(' **Aquí va el texto de nota.** ')
 			with tag('a', href = "../Text/{}#rf{}".format(archivo_texto, num_nota)):
 				note.asis('&lt;&lt;')
@@ -95,10 +95,9 @@ elif args.f == 0 | args.t == 0:
 else:
 
 	while inicio_rango <= fin_rango:
-		notas.append(crearNota(ini, origen) + "\n\n")
-		referencias.append(crearReferencia(ini, archivo_notas) + "\n")
+		notas.append(crearNota(inicio_rango, cap_origen) + "\n\n")
+		referencias.append(crearReferencia(inicio_rango, archivo_notas) + "\n")
 		inicio_rango += 1
-		i+= 1
 	#print (notas)
 	imprimir(archivo_notas, notas)
 	imprimir(archivo_refs, referencias)
