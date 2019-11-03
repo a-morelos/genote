@@ -92,6 +92,7 @@ if total_notas != 0:
 #Se indica falta de parametros y se termina la ejecucion
 elif args.f == 0 | args.t == 0:
 	print("Debe indicar inicio y fin para rango")
+	sys.exit()
 else:
 
 	while inicio_rango <= fin_rango:
