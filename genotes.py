@@ -1,46 +1,54 @@
-#Script para generar referencias y notas a pie de página
-#Autor: Alberto Morelos
-#Fecha 05/12/2017
+# Script para generar referencias y notas a pie de página
+# Autor: Alberto Morelos
+# Fecha: 05/12/2017
+# Fecha de modificación: 12/01/2020
 
 import argparse, sys
 from yattag import Doc, indent
 
 parser = argparse.ArgumentParser(description="Generador de notas y referencias en HTML")
 
-#define un grupo de parametros para introducir notas por rangos
+# Grupo de argumentos para un rango de notas
 group = parser.add_argument_group('rango')
 group.add_argument("-f", type=int, help="inicio de rango", default=0)
 group.add_argument("-t", type=int, help="fin de rango", default=0)
 
 parser.add_argument("n", type=int, help="numero de notas a generar, escriba cero (0) si desea introducir rango")
+
+# Argumentos opcionales
 parser.add_argument("-s", help="Lugar de origen de la referencia (sin extensión, la extension por default es xhtml)", default="capitulo1")
-#parser.add_argument("-o", help="Archivo de destino para las notas.")
+parser.add_argument("-d", help="Archivo de destino para las notas.", default="notas")
 #parser.add_argument("-e", help="Cambio de extension para las referencias de un archivo" default="xhtml")
 
+# Guarda los argumentos del parser
 args = parser.parse_args()
 
 total_notas = args.n
 inicio_rango = args.f
 fin_rango =args.t
-# capitulo de origen
-cap_origen = args.s + '.xhtml'
-# archivo_notas = args.o + 'xhtml'
 
-archivo_notas = "notas.xhtml"
+# Archivo de capitulo de origen
+cap_origen = args.s + '.xhtml'
+# Archivo de notas de destino
+#archivo_destino = args.d + 'xhtml'
+# Archivo de notas de destino por default
+archivo_notas = args.d + '.xhtml'
+# Archivo de referencias
 archivo_refs = "referencias.xhtml"
 
-#doc, tag, text, line = Doc().ttl()
-
-def crearNota(num_nota, archivo_texto):
+def crearNota(numero_nota, archivo_texto):
 
 	# Genera una instancia de Doc para la nota
 	note, tag, text, line = Doc().ttl()
 
+	# <div class="nota">
 	with tag('div', klass = "nota"): 
-		with tag('p', id = "nt{}".format(num_nota)): 
-			line('sup', '[{}]'.format(num_nota)) 
+		# <p id="nt{numero_nota}"><sup>[{numero_nota}]</sup>
+		with tag('p', id = "nt{}".format(numero_nota)):
+			line('sup', '[{}]'.format(numero_nota)) 
 			text(' **Aquí va el texto de nota.** ')
-			with tag('a', href = "../Text/{}#rf{}".format(archivo_texto, num_nota)):
+			# <a href="../Text/{archivo_texto}#rf{numero_nota}">&lt;&lt;</a>
+			with tag('a', href = "../Text/{}#rf{}".format(archivo_texto, numero_nota)):
 				note.asis('&lt;&lt;')
 	
 	nota = indent(note.getvalue())
@@ -51,6 +59,7 @@ def crearReferencia(num_nota, archivo_notas):
 	# Genera una instancia de Doc para la referencia
 	doc, tag, text, line = Doc().ttl()
 	
+	# <a href="../Text/{archivo_notas}#nt{num_nota id="rf{num_nota}"}"><sup>[{num_nota}]</sup></a>
 	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, num_nota), id="rf{}".format(num_nota)):
 		line('sup', '[{}]'.format(num_nota))
 	
