@@ -29,8 +29,6 @@ fin_rango =args.t
 
 # Archivo de capitulo de origen
 cap_origen = args.s + '.xhtml'
-# Archivo de notas de destino
-#archivo_destino = args.d + 'xhtml'
 # Archivo de notas de destino por default
 archivo_notas = args.d + '.xhtml'
 # Archivo de referencias
