@@ -3,6 +3,8 @@
 # Fecha: 05/12/2017
 # Fecha de modificación: 12/01/2020
 
+!# /usr/bin/python
+
 import argparse, sys
 from yattag import Doc, indent
 
