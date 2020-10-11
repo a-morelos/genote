@@ -25,6 +25,7 @@ parser.add_argument("-d", help="Archivo de destino para las notas.", default="no
 # Guarda los argumentos del parser
 args = parser.parse_args()
 
+# Inicializa las variables con el total de notas, e inicio y fin de rango (opcional).
 total_notas = args.n
 inicio_rango = args.f
 fin_rango =args.t
@@ -59,7 +60,7 @@ def crearReferencia(num_nota, archivo_notas):
 	# Genera una instancia de Doc para la referencia
 	doc, tag, text, line = Doc().ttl()
 	
-	# <a href="../Text/{archivo_notas}#nt{num_nota id="rf{num_nota}"}"><sup>[{num_nota}]</sup></a>
+	# <a href="../Text/{archivo_notas}#nt{num_nota} id="rf{num_nota}"><sup>[{num_nota}]</sup></a>
 	with tag ('a', href = "../Text/{}#nt{}".format(archivo_notas, num_nota), id="rf{}".format(num_nota)):
 		line('sup', '[{}]'.format(num_nota))
 	
